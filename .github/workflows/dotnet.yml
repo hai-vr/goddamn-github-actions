@@ -9,6 +9,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  netProject: "goddamn-github-actions"
+  netCsProj: "goddamn-github-actions/goddamn-github-actions.csproj"
+  packageName: "dev.hai-vr.app.goddamn-github-actions"
+
 jobs:
   release:
     name: Release
@@ -28,33 +33,44 @@ jobs:
           #   target: osx-x64
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+  
+    - name: get version
+      id: version
+      uses: notiz-dev/github-action-json-property@7c8cf5cc36eb85d8d287a8086a39dac59628eb31
+      with: 
+          path: "Packages/${{env.packageName}}/package.json"
+          prop_path: "version"
+
+    - name: Set Environment Variables
+      run: |
+        echo "zipFile=${{ env.packageName }}-${{ steps.version.outputs.prop }}".zip >> $GITHUB_ENV
+        echo "unityPackage=${{ env.packageName }}-${{ steps.version.outputs.prop }}.unitypackage" >> $GITHUB_ENV
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 7.0.x
+
     - name: Build
       shell: bash
       run: |
-        # Define some variables for things we need
-        # tag=$(git describe --tags --abbrev=0)
-        release_name="goddamn-github-actions-TEST-${{ matrix.target }}"
+        dotnet publish ${{env.netProject}}/${{env.netCsProj}}.csproj --runtime "${{ matrix.target }}" -c Release -o "Packages/${{env.packageName}}"
 
-        # Build everything
-        dotnet publish goddamn-github-actions/goddamn-github-actions.csproj --runtime "${{ matrix.target }}" -c Release -o "$release_name"
-
-        # Pack files
-        if [ "${{ matrix.target }}" == "win-x64" ]; then
-          7z a -tzip "${release_name}.zip" "./${release_name}/*"
-        else
-          tar czvf "${release_name}.tar.gz" "$release_name"
-        fi
-
-        # Delete output directory
-        rm -r "$release_name"
-    - name: Publish
-      uses: softprops/action-gh-release@v1
+    - name: Create Zip
+      uses: thedoctor0/zip-release@09336613be18a8208dfa66bd57efafd9e2685657
       with:
-        files: "goddamn-github-actions-*"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        type: "zip"
+        directory: "Packages/${{env.packageName}}/"
+        filename: "../../${{env.zipFile}}" # make the zip file two directories up, since we start two directories in above
+        
+    - run: find "Packages/${{env.packageName}}/" -name \*.meta >> metaList
+
+    - name: Make Release
+      uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5
+      with:
+        tag_name: ${{ steps.version.outputs.prop }}
+        files: |
+          ${{ env.zipFile }}
+          Packages/${{ env.packageName }}/package.json
