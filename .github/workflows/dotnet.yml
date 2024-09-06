@@ -61,6 +61,7 @@ jobs:
       shell: bash
       run: |
         dotnet publish ${{env.netCsProj}} --runtime "${{ matrix.target }}" -c Release -o "Packages/${{env.packageName}}/${{env.outputAppFolder}}"
+        rm Packages/${{env.packageName}}/${{env.outputAppFolder}}/createdump.exe
 
     - name: Create Zip
       uses: thedoctor0/zip-release@09336613be18a8208dfa66bd57efafd9e2685657
