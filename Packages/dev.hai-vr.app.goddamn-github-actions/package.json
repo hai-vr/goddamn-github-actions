@@ -1,7 +1,7 @@
 {
   "name": "dev.hai-vr.app.goddamn-github-actions",
   "displayName": "Haï ~ APP - Goddamn GitHub Actions",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "unity": "2019.4",
   "description": "APP Goddamn GitHub Actions",
   "vrchatVersion" : "2022.1.1",
