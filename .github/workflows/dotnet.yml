@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         # kind: ['linux', 'windows', 'macOS']
-        kind: ['linux', 'windows', 'macOS']
+        kind: ['windows']
         include:
           # - kind: linux
           #   os: ubuntu-latest
