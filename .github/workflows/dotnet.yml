@@ -8,6 +8,7 @@ on:
     branches: [ "main" ]
 
 env:
+  outputAppFolder: "GoddamnGithubActions~"
   netProject: "goddamn-github-actions"
   netCsProj: "goddamn-github-actions/goddamn-github-actions.csproj"
   packageName: "dev.hai-vr.app.goddamn-github-actions"
@@ -44,6 +45,8 @@ jobs:
           path: "Packages/${{env.packageName}}/package.json"
           prop_path: "version"
 
+# hai: these don't work here (?! is it because windows env? i don't see that documented in github workflow commands
+# for now i've inlined the zip file name
     # - name: Set Environment Variables
     #   run: |
     #     echo "zipFile=${{ env.packageName }}-${{ steps.version.outputs.prop }}".zip >> $GITHUB_ENV
@@ -57,7 +60,7 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        dotnet publish ${{env.netCsProj}} --runtime "${{ matrix.target }}" -c Release -o "Packages/${{env.packageName}}"
+        dotnet publish ${{env.netCsProj}} --runtime "${{ matrix.target }}" -c Release -o "Packages/${{env.packageName}}/"
 
     - name: Create Zip
       uses: thedoctor0/zip-release@09336613be18a8208dfa66bd57efafd9e2685657
