@@ -56,7 +56,7 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        dotnet publish ${{env.netProject}}/${{env.netCsProj}}.csproj --runtime "${{ matrix.target }}" -c Release -o "Packages/${{env.packageName}}"
+        dotnet publish ${{env.netCsProj}}.csproj --runtime "${{ matrix.target }}" -c Release -o "Packages/${{env.packageName}}"
 
     - name: Create Zip
       uses: thedoctor0/zip-release@09336613be18a8208dfa66bd57efafd9e2685657
