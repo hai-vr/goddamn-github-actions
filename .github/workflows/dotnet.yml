@@ -63,6 +63,7 @@ jobs:
     - name: Build
       shell: bash
       run: |
+        export ASSEMBLY_VERSION=${{ steps.version.outputs.prop }}
         dotnet publish ${{env.netCsProj}} --runtime "${{ matrix.target }}" -c Release -o "Packages/${{env.packageName}}/${{env.outputAppFolder}}"
 #        rm "./Packages/${{env.packageName}}/${{env.outputAppFolder}}/createdump.exe"
 
